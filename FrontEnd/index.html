@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Swachhta Citizen Hub 2.0 | Clean India Movement</title>
+    <meta name="description" content="India's Premier Civic-Tech Platform for Waste Management & Community Cleanliness">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_REAL_API_KEY&libraries=visualization"></script>
+</head>
+<body>
+    <header>
+        <div class="container header-content">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-recycle"></i>
+                </div>
+                <span>Swachhta Citizen Hub</span>
+            </div>
+            <nav class="nav-menu">
+                <button class="nav-btn" data-page="home"><i class="fas fa-home"></i> Home</button>
+                <button class="nav-btn" data-page="waste"><i class="fas fa-trash-alt"></i> Waste ID</button>
+                <button class="nav-btn" data-page="challenges"><i class="fas fa-trophy"></i> Challenges</button>
+                <button class="nav-btn" data-page="leaderboard"><i class="fas fa-medal"></i> Leaderboard</button>
+                <button class="nav-btn" data-page="awareness"><i class="fas fa-lightbulb"></i> Learn</button>
+                <button class="nav-btn" data-page="profile"><i class="fas fa-user"></i> Profile</button>
+                <button class="theme-toggle" id="themeToggle"><i class="fas fa-moon"></i></button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container main-content">
+        <!-- Home Page -->
+        <section id="home" class="page active">
+            <div class="hero-section">
+                <div class="hero-content">
+                    <h1 class="hero-title">Join the Clean India Movement</h1>
+                    <p class="hero-subtitle">Your actions today shape our cleaner tomorrow. Earn Green Points, unlock achievements, and become a Swachhta Champion!</p>
+                    <div class="cta-buttons">
+                        <button class="btn" data-page="waste"><i class="fas fa-search"></i> Identify Waste</button>
+                        <button class="btn btn-secondary" data-page="challenges"><i class="fas fa-gamepad"></i> Play Cleanup Games</button>
+                        <button class="btn btn-accent" id="quickReportBtn"><i class="fas fa-flag"></i> Quick Report</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <span class="stat-number" id="totalUsers">47,892</span>
+                    <span class="stat-label">Active Cleanliness Champions</span>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-trash-restore"></i>
+                    </div>
+                    <span class="stat-number" id="wasteIdentified">328,156</span>
+                    <span class="stat-label">Waste Items Properly Sorted</span> 
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-city"></i>
+                    </div>
+                    <span class="stat-number" id="citiesParticipating">214</span>
+                    <span class="stat-label">Cities Transforming India</span>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-leaf"></i>
+                    </div>
+                    <span class="stat-number" id="co2Reduced">1,847</span>
+                    <span class="stat-label">Tons CO₂ Reduced</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2><i class="fas fa-map-marked-alt"></i> Maharashtra Cleanliness Heatmap</h2>
+                <p>Real-time cleanliness monitoring across Maharashtra. See how clean your city is and contribute to making it cleaner!</p>
+
+                <div class="map-container">
+                    <div id="heatmap"></div>
+                    <div class="map-controls">
+                        <button class="filter-btn active" data-layer="all">All Cities</button>
+                        <button class="filter-btn" data-layer="excellent">Excellent (80+)</button>
+                        <button class="filter-btn" data-layer="good">Good (60-79)</button>
+                        <button class="filter-btn" data-layer="needs-improvement">Needs Help (40-59)</button>
+                        <button class="filter-btn" data-layer="critical">Critical (&lt;40)</button>
+                    </div>
+                    <div class="legend">
+                        <div class="legend-title">Cleanliness Level</div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #00FF00;"></div>
+                            <span>Excellent (80-100)</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #FFFF00;"></div>
+                            <span>Good (60-79)</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #FF8000;"></div>
+                            <span>Needs Improvement (40-59)</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #FF0000;"></div>
+                            <span>Critical (0-39)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="heatmap-stats">
+                    <h3><i class="fas fa-chart-bar"></i> Maharashtra Statistics</h3>
+                    <div id="stats-container" class="stats-container"></div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="card">
+                <h2><i class="fas fa-bolt"></i> Quick Actions</h2>
+                <div class="quick-actions-grid">
+                    <div class="quick-action-card" data-page="waste">
+                        <div class="quick-action-icon">
+                            <i class="fas fa-search"></i>
+                        </div>
+                        <h3>Identify Waste</h3>
+                        <p>Not sure where to dispose? Identify any waste item</p>
+                    </div>
+                    <div class="quick-action-card" data-page="challenges">
+                        <div class="quick-action-icon">
+                            <i class="fas fa-trophy"></i>
+                        </div>
+                        <h3>Daily Challenges</h3>
+                        <p>Complete tasks and earn Green Points</p>
+                    </div>
+                    <div class="quick-action-card" id="reportIssueBtn">
+                        <div class="quick-action-icon">
+                            <i class="fas fa-flag"></i>
+                        </div>
+                        <h3>Report Issue</h3>
+                        <p>Spot garbage? Report it instantly</p>
+                    </div>
+                    <div class="quick-action-card" data-page="awareness">
+                        <div class="quick-action-icon">
+                            <i class="fas fa-graduation-cap"></i>
+                        </div>
+                        <h3>Learn & Earn</h3>
+                        <p>Educational content with points reward</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Certificate Section -->
+            <div class="card" id="certificate-section" style="display: none;">
+                <h2><i class="fas fa-award"></i> Achievement Unlocked! 🎉</h2>
+                <div class="certificate-preview">
+                    <div class="certificate-badge">
+                        <i class="fas fa-trophy"></i>
+                    </div>
+                    <div class="certificate-info">
+                        <h3>Swachhta Champion Certificate</h3>
+                        <p>Congratulations! You've earned enough Green Points to receive your official Swachhta Champion Certificate.</p>
+                        <button class="btn btn-accent" id="view-certificate-btn"><i class="fas fa-certificate"></i> View My Certificate</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Live Community Feed -->
+            <div class="card">
+                <h2><i class="fas fa-rss"></i> Community Activity Feed</h2>
+                <div class="activity-feed" id="activityFeed">
+                    <!-- Activities will be loaded here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Waste Identifier Page -->
+        <section id="waste" class="page">
+            <div class="card">
+                <h2><i class="fas fa-search"></i> AI Waste Identifier</h2>
+                <p>Use our advanced AI to identify any waste item and get proper disposal instructions. Earn 5-20 Green Points per identification!</p>
+                
+                <div class="waste-search-container">
+                    <input type="text" class="waste-search" id="wasteSearch" placeholder="What waste item are you holding? (e.g. banana peel, battery, plastic bottle)">
+                    <button class="search-btn" id="searchBtn"><i class="fas fa-search"></i> Identify</button>
+                </div>
+
+                <div class="search-suggestions">
+                    <span class="suggestion-tag">battery</span>
+                    <span class="suggestion-tag">plastic bottle</span>
+                    <span class="suggestion-tag">medicine</span>
+                    <span class="suggestion-tag">mobile phone</span>
+                    <span class="suggestion-tag">cooking oil</span>
+                </div>
+
+                <div class="waste-result" id="wasteResult"></div>
+            </div>
+
+            <div class="card">
+                <h2><i class="fas fa-camera"></i> Image Recognition</h2>
+                <p>Upload an image of waste item for automatic identification</p>
+                
+                <div class="image-upload-container">
+                    <div class="image-upload" id="imageUpload">
+                        <div class="upload-icon">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                        </div>
+                        <p>Drag & drop waste image here or click to browse</p>
+                        <p class="upload-subtext">Supports JPG, PNG, GIF (Max 5MB)</p>
+                        <input type="file" id="fileInput" accept="image/*" style="display: none;">
+                    </div>
+                    <div class="upload-preview" id="uploadPreview"></div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2><i class="fas fa-gamepad"></i> Waste Sorting Game</h2>
+                <p>Test your knowledge by dragging items to the correct bins. Earn 10 Green Points for each correct sort!</p>
+                <div class="game-stats">
+                    <div class="game-stat">
+                        <span class="stat-value" id="gameScore">0</span>
+                        <span class="stat-label">Current Score</span>
+                    </div>
+                    <div class="game-stat">
+                        <span class="stat-value" id="gameStreak">0</span>
+                        <span class="stat-label">Current Streak</span>
+                    </div>
+                    <div class="game-stat">
+                        <span class="stat-value" id="gameTime">60</span>
+                        <span class="stat-label">Seconds Left</span>
+                    </div>
+                </div>
+                
+                <div class="game-container">
+                    <div class="game-header">
+                        <h3>Drag items to the correct bins</h3>
+                        <button class="btn btn-accent" id="startGameBtn"><i class="fas fa-play"></i> Start Game</button>
+                    </div>
+                    
+                    <div class="drag-drop-game">
+                        <div class="waste-items-container">
+                            <h4>Drag These Items:</h4>
+                            <div class="waste-items" id="wasteItems"></div>
+                        </div>
+                        <div class="bins-container">
+                            <h4>Drop in Correct Bins:</h4>
+                            <div class="bin-container">
+                                <div class="waste-bin" data-category="wet">
+                                    <div class="bin-icon"><i class="fas fa-apple-alt"></i></div>
+                                    <h3>Wet Waste</h3>
+                                    <p>Biodegradable, compostable</p>
+                                </div>
+                                <div class="waste-bin" data-category="dry">
+                                    <div class="bin-icon"><i class="fas fa-box"></i></div>
+                                    <h3>Dry Waste</h3>
+                                    <p>Recyclable, non-biodegradable</p>
+                                </div>
+                                <div class="waste-bin" data-category="hazardous">
+                                    <div class="bin-icon"><i class="fas fa-biohazard"></i></div>
+                                    <h3>Hazardous</h3>
+                                    <p>Chemicals, batteries, medical</p>
+                                </div>
+                                <div class="waste-bin" data-category="e-waste">
+                                    <div class="bin-icon"><i class="fas fa-plug"></i></div>
+                                    <h3>E-Waste</h3>
+                                    <p>Electronics, gadgets</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Challenges Page -->
+        <section id="challenges" class="page">
+            <div class="card">
+                <h2><i class="fas fa-trophy"></i> Cleanliness Challenges</h2>
+                <p>Complete challenges to earn Green Points and badges. Track your progress toward becoming a Swachhta Champion!</p>
+                
+                <div class="progress-section">
+                    <div class="progress-card">
+                        <h3>Monthly Progress</h3>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="monthlyProgress" style="width: 65%"></div>
+                        </div>
+                        <div class="progress-stats">
+                            <span>65% Complete</span>
+                            <span>650/1000 Points</span>
+                        </div>
+                    </div>
+                    <div class="streak-card">
+                        <h3>Current Streak</h3>
+                        <div class="streak-count">12 days</div>
+                        <p>Keep going! 3 more days for bonus</p>
+                    </div>
+                </div>
+                
+                <div class="challenge-filters">
+                    <button class="filter-btn active" data-frequency="all">All Challenges</button>
+                    <button class="filter-btn" data-frequency="daily">Daily</button>
+                    <button class="filter-btn" data-frequency="weekly">Weekly</button>
+                    <button class="filter-btn" data-frequency="monthly">Monthly</button>
+                    <button class="filter-btn" data-frequency="special">Special Events</button>
+                </div>
+                
+                <div class="challenges-container">
+                    <div class="challenge-category">
+                        <h3><i class="fas fa-sun"></i> Daily Challenges</h3>
+                        <div class="challenges-grid" id="dailyChallenges"></div>
+                    </div>
+                    
+                    <div class="challenge-category">
+                        <h3><i class="fas fa-calendar-week"></i> Weekly Challenges</h3>
+                        <div class="challenges-grid" id="weeklyChallenges"></div>
+                    </div>
+                    
+                    <div class="challenge-category">
+                        <h3><i class="fas fa-calendar-alt"></i> Monthly Challenges</h3>
+                        <div class="challenges-grid" id="monthlyChallenges"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2><i class="fas fa-award"></i> Your Achievement Badges</h2>
+                <p>Collect badges by completing challenges and reaching milestones</p>
+                
+                <div class="badges-container" id="badgesContainer"></div>
+            </div>
+
+            <div class="card">
+                <h2><i class="fas fa-gift"></i> Available Rewards</h2>
+                <p>Redeem your Green Points for exciting rewards</p>
+                
+                <div class="rewards-container" id="rewardsContainer"></div>
+            </div>
+        </section>
+
+        <!-- Leaderboard Page -->
+        <section id="leaderboard" class="page">
+            <div class="card">
+                <h2><i class="fas fa-medal"></i> Clean City Leaderboard</h2>
+                <p>See how your city ranks in the Swachhta movement. Top cities get special recognition and rewards!</p>
+                
+                <div class="leaderboard-controls">
+                    <button class="filter-btn active" data-type="city">City Ranking</button>
+                    <button class="filter-btn" data-type="user">User Ranking</button>
+                    <button class="filter-btn" data-type="weekly">This Week</button>
+                    <button class="filter-btn" data-type="monthly">This Month</button>
+                </div>
+                
+                <div class="leaderboard-container">
+                    <div class="leaderboard-header">
+                        <div class="rank">Rank</div>
+                        <div class="name">City/User</div>
+                        <div class="points">Green Points</div>
+                        <div class="progress">Cleanliness Score</div>
+                        <div class="users">Active Users</div>
+                    </div>
+                    <div class="leaderboard-entries" id="cityLeaderboard"></div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2><i class="fas fa-chart-line"></i> Your Progress</h2>
+                <div class="user-stats-grid">
+                    <div class="user-stat-card">
+                        <div class="user-stat-icon">
+                            <i class="fas fa-trophy"></i>
+                        </div>
+                        <div class="user-stat-info">
+                            <div class="user-stat-value" id="userRank">#1,247</div>
+                            <div class="user-stat-label">Global Rank</div>
+                        </div>
+                    </div>
+                    <div class="user-stat-card">
+                        <div class="user-stat-icon">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <div class="user-stat-info">
+                            <div class="user-stat-value" id="userPoints">1,250</div>
+                            <div class="user-stat-label">Green Points</div>
+                        </div>
+                    </div>
+                    <div class="user-stat-card">
+                        <div class="user-stat-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="user-stat-info">
+                            <div class="user-stat-value" id="userChallenges">42</div>
+                            <div class="user-stat-label">Challenges Completed</div>
+                        </div>
+                    </div>
+                    <div class="user-stat-card">
+                        <div class="user-stat-icon">
+                            <i class="fas fa-award"></i>
+                        </div>
+                        <div class="user-stat-info">
+                            <div class="user-stat-value" id="userBadges">8</div>
+                            <div class="user-stat-label">Badges Earned</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Awareness Page -->
+        <section id="awareness" class="page">
+            <div class="card">
+                <h2><i class="fas fa-lightbulb"></i> Daily Waste Management Tips</h2>
+                <p>Learn something new every day and earn 5 Green Points for each tip you read!</p>
+                <div class="tip-carousel" id="tipCarousel"></div>
+            </div>
+
+            <div class="card">
+                <h2><i class="fas fa-newspaper"></i> Government Schemes & Initiatives</h2>
+                <p>Stay updated with latest government programs and policies for waste management</p>
+                <div id="schemesContainer"></div>
+            </div>
+
+            <div class="card">
+                <h2><i class="fas fa-graduation-cap"></i> Educational Resources</h2>
+                <div class="resources-grid">
+                    <div class="resource-card">
+                        <div class="resource-icon">
+                            <i class="fas fa-video"></i>
+                        </div>
+                        <h3>Video Tutorials</h3>
+                        <p>Learn proper waste segregation through videos</p>
+                        <button class="btn btn-outline">Watch Now</button>
+                    </div>
+                    <div class="resource-card">
+                        <div class="resource-icon">
+                            <i class="fas fa-file-pdf"></i>
+                        </div>
+                        <h3>PDF Guides</h3>
+                        <p>Download comprehensive waste management guides</p>
+                        <button class="btn btn-outline">Download</button>
+                    </div>
+                    <div class="resource-card">
+                        <div class="resource-icon">
+                            <i class="fas fa-chalkboard-teacher"></i>
+                        </div>
+                        <h3>Interactive Courses</h3>
+                        <p>Take courses and earn certification</p>
+                        <button class="btn btn-outline">Enroll Now</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2><i class="fas fa-camera"></i> Community Photo Wall</h2>
+                <p>See the amazing transformations happening across India</p>
+                <div class="photo-wall" id="photoWall"></div>
+            </div>
+        </section>
+
+        <!-- Profile Page -->
+        <section id="profile" class="page">
+            <div class="card">
+                <h2><i class="fas fa-user"></i> My Profile</h2>
+                <div class="profile-header">
+                    <div class="profile-avatar">
+                        <img src="https://via.placeholder.com/100" alt="User Avatar" id="userAvatar">
+                        <button class="edit-avatar-btn"><i class="fas fa-camera"></i></button>
+                    </div>
+                    <div class="profile-info">
+                        <h3 id="userName">Swachhta User</h3>
+                        <p id="userLocation">Mumbai, Maharashtra</p>
+                        <div class="profile-level">
+                            <span class="level-badge">Level 5</span>
+                            <span class="member-since">Member since 2024</span>
+                        </div>
+                    </div>
+                    <div class="profile-stats">
+                        <div class="profile-stat">
+                            <div class="stat-number" id="profilePoints">1,250</div>
+                            <div class="stat-label">Green Points</div>
+                        </div>
+                        <div class="profile-stat">
+                            <div class="stat-number" id="profileStreak">12</div>
+                            <div class="stat-label">Day Streak</div>
+                        </div>
+                        <div class="profile-stat">
+                            <div class="stat-number" id="profileRank">#1,247</div>
+                            <div class="stat-label">Global Rank</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2><i class="fas fa-chart-line"></i> My Progress</h2>
+                <div class="progress-charts">
+                    <div class="progress-chart">
+                        <h3>Monthly Points</h3>
+                        <canvas id="pointsChart" width="400" height="200"></canvas>
+                    </div>
+                    <div class="progress-chart">
+                        <h3>Challenge Completion</h3>
+                        <canvas id="challengesChart" width="400" height="200"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2><i class="fas fa-cog"></i> Settings</h2>
+                <div class="settings-grid">
+                    <div class="setting-group">
+                        <h3>Notifications</h3>
+                        <label class="switch">
+                            <input type="checkbox" checked>
+                            <span class="slider"></span>
+                            <span class="switch-label">Challenge Reminders</span>
+                        </label>
+                        <label class="switch">
+                            <input type="checkbox" checked>
+                            <span class="slider"></span>
+                            <span class="switch-label">Points Updates</span>
+                        </label>
+                        <label class="switch">
+                            <input type="checkbox">
+                            <span class="slider"></span>
+                            <span class="switch-label">Community Updates</span>
+                        </label>
+                    </div>
+                    <div class="setting-group">
+                        <h3>Privacy</h3>
+                        <label class="switch">
+                            <input type="checkbox" checked>
+                            <span class="slider"></span>
+                            <span class="switch-label">Show on Leaderboard</span>
+                        </label>
+                        <label class="switch">
+                            <input type="checkbox">
+                            <span class="slider"></span>
+                            <span class="switch-label">Share Progress</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Certificate Modal -->
+    <div class="certificate-modal" id="certificateModal">
+        <div class="certificate-content">
+            <span class="close-certificate" id="closeCertificate">&times;</span>
+            <div class="certificate-header">
+                <div class="certificate-logo">
+                    <i class="fas fa-recycle"></i>
+                </div>
+                <h2>Swachhta Champion Certificate</h2>
+                <p>Official Recognition of Environmental Stewardship</p>
+            </div>
+            <div class="certificate-body">
+                <p>This is to certify that</p>
+                <h3 id="certificate-user">Swachhta User</h3>
+                <p>has demonstrated exceptional commitment to environmental cleanliness and sustainable waste management practices, earning the distinguished title of</p>
+                <h4>Swachhta Champion</h4>
+                <p>by accumulating</p>
+                <div class="points-display" id="certificate-points">1,250+ Green Points</div>
+                <p>through dedicated participation in community cleanliness initiatives and responsible waste management.</p>
+            </div>
+            <div class="certificate-footer">
+                <div class="certificate-date">
+                    <p>Issued on</p>
+                    <p id="certificate-date">January 15, 2024</p>
+                </div>
+                <div class="certificate-signature">
+                    <p>Swachhta Citizen Hub</p>
+                    <p>Clean India Movement</p>
+                </div>
+            </div>
+            <div class="certificate-actions">
+                <button class="btn btn-accent" id="download-certificate"><i class="fas fa-download"></i> Download Certificate</button>
+                <button class="btn btn-outline" id="share-certificate"><i class="fas fa-share"></i> Share Achievement</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Report Modal -->
+    <div class="report-modal" id="reportModal">
+        <div class="report-content">
+            <span class="close-report" id="closeReport">&times;</span>
+            <h2><i class="fas fa-flag"></i> Report Cleanliness Issue</h2>
+            <form id="reportForm">
+                <div class="form-group">
+                    <label for="issueType">Issue Type</label>
+                    <select id="issueType" required>
+                        <option value="">Select issue type</option>
+                        <option value="garbage">Garbage Dumping</option>
+                        <option value="sewage">Sewage Problem</option>
+                        <option value="recycling">Recycling Issue</option>
+                        <option value="public">Public Area Cleaning</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="issueLocation">Location</label>
+                    <input type="text" id="issueLocation" placeholder="Enter location or use current location" required>
+                    <button type="button" class="location-btn" id="useCurrentLocation"><i class="fas fa-location-arrow"></i></button>
+                </div>
+                <div class="form-group">
+                    <label for="issueDescription">Description</label>
+                    <textarea id="issueDescription" placeholder="Describe the issue in detail..." rows="4"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="issueImage">Upload Photo (Optional)</label>
+                    <input type="file" id="issueImage" accept="image/*">
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-accent"><i class="fas fa-paper-plane"></i> Submit Report</button>
+                    <button type="button" class="btn btn-outline" id="cancelReport">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Chatbot -->
+    <div class="chatbot-toggle" id="chatbotToggle">
+        <i class="fas fa-robot"></i>
+        <span class="chatbot-notification" id="chatbotNotification">3</span>
+    </div>
+    
+    <div class="chatbot-container" id="chatbotContainer">
+        <div class="chatbot-header">
+            <div class="chatbot-info">
+                <div class="chatbot-avatar">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div class="chatbot-details">
+                    <h3>Swachhta Assistant</h3>
+                    <p>Online • Ready to help</p>
+                </div>
+            </div>
+            <div class="chatbot-controls">
+                <button class="chatbot-minimize" id="minimizeChatbot"><i class="fas fa-minus"></i></button>
+                <span class="close-chatbot" id="closeChatbot">&times;</span>
+            </div>
+        </div>
+        <div class="chatbot-messages" id="chatbotMessages">
+            <div class="message bot welcome">
+                <div class="message-avatar">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div class="message-content">
+                    <p>Namaste! I'm your Swachhta Assistant. I can help you with:</p>
+                    <ul>
+                        <li>Waste segregation guidance</li>
+                        <li>Recycling center locations</li>
+                        <li>Challenge information</li>
+                        <li>Green Points explanation</li>
+                    </ul>
+                    <p>How can I assist you today?</p>
+                </div>
+            </div>
+        </div>
+        <div class="chatbot-quick-actions">
+            <button class="quick-action" data-action="segregation">Waste Segregation</button>
+            <button class="quick-action" data-action="recycling">Recycling Centers</button>
+            <button class="quick-action" data-action="challenges">Current Challenges</button>
+        </div>
+        <div class="chatbot-input">
+            <input type="text" id="chatbotInput" placeholder="Ask me about waste management...">
+            <button id="sendMessage"><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div class="loading-spinner" id="loadingSpinner">
+        <div class="spinner"></div>
+        <p>Loading...</p>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="app.js"></script>
+
+    <!-- Add to bottom of body -->
+<div id="adminPanel" style="display: none; position: fixed; top: 10px; right: 10px; background: white; padding: 20px; border: 2px solid red; z-index: 10000;">
+    <h3>Admin Panel</h3>
+    <button onclick="addSampleData()">Add Sample Data</button>
+    <button onclick="updateCityScores()">Update City Scores</button>
+    <button onclick="resetUserData()">Reset Demo Data</button>
+</div>
+
+<script>
+// Press Ctrl+Alt+A to show admin panel
+document.addEventListener('keydown', (e) => {
+    if (e.ctrlKey && e.altKey && e.key === 'a') {
+        document.getElementById('adminPanel').style.display = 'block';
+    }
+});
+
+async function addSampleData() {
+    const wasteItems = [
+        {name: "glass bottle", category: "dry", tip: "Recycle in glass bin", points: 10},
+        {name: "cooking oil", category: "hazardous", tip: "Take to collection center", warning: "Never pour down drain", points: 15}
+    ];
+    
+    for (let item of wasteItems) {
+        await fetch('/api/waste/add', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(item)
+        });
+    }
+    alert('Sample data added!');
+}
+</script>
+</body>
+</html>
